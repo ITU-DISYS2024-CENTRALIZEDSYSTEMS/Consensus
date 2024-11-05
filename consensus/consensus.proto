@@ -1,0 +1,15 @@
+syntax = "proto3";
+option go_package = "./consensus";
+
+service Consensus {
+  rpc RequestAccess (Request) returns (Reply);
+}
+
+message Request {
+  int32 timestamp = 1;
+}
+
+message Reply {
+  bool access = 2;
+  int32 timestamp = 3;
+}
