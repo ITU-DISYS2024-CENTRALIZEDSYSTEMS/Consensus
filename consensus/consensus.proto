@@ -10,6 +10,5 @@ message Request {
 }
 
 message Reply {
-  bool access = 1;
-  int32 timestamp = 2;
+  
 }
