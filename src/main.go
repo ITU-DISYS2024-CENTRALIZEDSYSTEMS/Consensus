@@ -21,11 +21,10 @@ import (
 
 type ConsensusServer struct {
 	consensus.UnimplementedConsensusServer
-	timestamp  int32
-	identifier int
-	peers      []string
-	requesting sync.Mutex
-	accessing  sync.Mutex
+	Timestamp  int32
+	Identifier int
+	Peers      []string
+	Requesting sync.Mutex
 }
 
 // Finds the first available port from an array of ports. Then returns an listener on that port.
@@ -55,30 +54,37 @@ func selectedPortIndex(ports []string, listener net.Listener) (index int, err er
 
 // Emulates a resource being accessed.
 func useCriticalResource() {
-	log.Printf("I got access the resource!")
-	log.Println("Waiting 5 secounds to ask again...")
+	log.Printf("Accessing critical resource.")
 	time.Sleep(5 * time.Second)
+	log.Println("Releasing critical resource.")
 }
 
 func getAccessToResource(server *ConsensusServer) {
 	grpcOptions := grpc.WithTransportCredentials(insecure.NewCredentials())
 
 	for {
+		server.Requesting.Lock()
 		accessGranted := true
-		for _, peer := range server.peers {
+
+		for _, peer := range server.Peers {
 			conn, err := grpc.NewClient(":"+peer, grpcOptions)
 			if err != nil {
 				log.Fatalf("Failed to connect to peer: %s %s", peer, err)
 			}
-			defer conn.Close()
 
 			client := consensus.NewConsensusClient(conn)
 			ctx := context.Background()
 			reply, err := client.RequestAccess(ctx, &consensus.Request{
-				Timestamp:  server.timestamp,
-				Identifier: int32(server.identifier),
+				Timestamp:  server.Timestamp,
+				Identifier: int32(server.Identifier),
 			})
-			if err != nil || !reply.Access {
+			conn.Close()
+			if err != nil {
+				log.Printf("Failed to request access from peer %s: %s", peer, err)
+				accessGranted = false
+				break
+			}
+			if !reply.Access {
 				accessGranted = false
 				break
 			}
@@ -86,20 +92,27 @@ func getAccessToResource(server *ConsensusServer) {
 
 		if accessGranted {
 			useCriticalResource()
+			server.Requesting.Unlock()
+			time.Sleep(5 * time.Second)
 		} else {
 			log.Println("Access denied, retrying...")
-			server.timestamp++
+			server.Timestamp++
+			server.Requesting.Unlock()
 			time.Sleep(time.Duration(rand.IntN(1000)) * time.Millisecond)
 		}
 	}
 }
 
 func (server *ConsensusServer) RequestAccess(context context.Context, request *consensus.Request) (*consensus.Reply, error) {
-	server.requesting.Lock()
-	defer server.requesting.Unlock()
+	server.Requesting.Lock()
+	defer server.Requesting.Unlock()
 
-	access := request.Timestamp >= server.timestamp
+	access := false
+	if request.Timestamp > server.Timestamp || (request.Timestamp == server.Timestamp && request.Identifier > int32(server.Identifier)) {
+		access = true
+	}
 
+	log.Printf("RequestAccess: From Peer(ID: %d, TS: %d) -> Granted: %v", request.Identifier, request.Timestamp, access)
 	return &consensus.Reply{Access: access}, nil
 }
 
@@ -121,9 +134,9 @@ func main() {
 
 	server := grpc.NewServer()
 	service := &ConsensusServer{
-		timestamp:  0,
-		identifier: os.Getpid(),
-		peers:      append(ports[:usedPortIndex], ports[usedPortIndex+1:]...),
+		Timestamp:  0,
+		Identifier: os.Getpid(),
+		Peers:      append(ports[:usedPortIndex], ports[usedPortIndex+1:]...),
 	}
 	consensus.RegisterConsensusServer(server, service)
 
