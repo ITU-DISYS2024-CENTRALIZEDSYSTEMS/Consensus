@@ -62,19 +62,21 @@ func main(){
 	service := &consensusServer{
 		lamportTime: 0,
 	}
-
 	proto.RegisterConsensusServer(server, service)
-
-
+	
+	go SendMessage();
+	
 	err = server.Serve(listener)
 	if err != nil {
 		log.Fatalln("Cannot serve service:", err)
 	}
 
+
 }
 
 func SendMessage(){
 	for {
+		log.Println("Type when ready: ")
 		input := bufio.NewScanner(os.Stdin)
 		input.Scan()
 
