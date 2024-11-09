@@ -36,7 +36,12 @@
 \maketitle
 
 \subsection*{Introduction}
+Consensus is a proof of concept of the Ricart–Agrawala Algorithm. The program is writen in Golang and uses gRPC to pass messages between the clients.
+The program is ran by first creating a .env file, with a set of ports to be used, and then running the main.go file multiple times in different terminals.
+Each terminal is running a peer which will begin to ask the other peers for permission to access the critical section.
 
+Various improments can be made, including the ability to run the peers on different ip's and to keep the gRPC connections open for longer periods.
+It was decided to keep the proof of concept simple, hence the dicision to postpone these improments.
 
 \subsection*{Peers and the critical section}
 
