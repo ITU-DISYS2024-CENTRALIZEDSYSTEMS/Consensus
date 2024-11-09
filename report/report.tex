@@ -1,0 +1,62 @@
+% report.tex
+
+\documentclass[a4paper,11pt]{article}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{varwidth}
+\usepackage{tasks}
+% Import packages
+\usepackage[a4paper]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{enumerate}
+\usepackage{geometry}
+ \geometry{
+ a4paper,
+ total={170mm,257mm},
+ left=20mm,
+ top=20mm,
+ }
+
+\usepackage{graphicx}
+
+\usepackage{listings}
+
+% Change enumerate environments you use letters
+\renewcommand{\theenumi}{\alph{enumi}}
+
+% Set title, author name and date
+\title{Consensus}
+\author{Johannes Jørgensen (jgjo),\\ Kevin Skovgaard Gravesen (kegr),\\ Joakim Andreasen (joaan)} 
+\date{\today}
+
+\begin{document} 
+
+\maketitle
+
+\subsection*{Introduction}
+
+
+\subsection*{Peers and the critical section}
+
+
+\subsection*{Only one peer is accessing the critical section at any given time}
+
+
+\subsection*{Every peer gets access to the critical section}
+
+
+
+\newpage
+\subsection*{Link to Github repository}
+
+\href{https://github.com/ITU-DISYS2024-CENTRALIZEDSYSTEMS/Consensus}{https://github.com/ITU-DISYS2024-CENTRALIZEDSYSTEMS/Consensus}
+
+\subsection*{Appendix}
+
+\subsubsection*{Logs}
+\begin{lstlisting}[basicstyle=\ttfamily\footnotesize]
+
+\end{lstlisting}
+\end{document}
