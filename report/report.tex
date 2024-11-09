@@ -48,7 +48,7 @@ Every peer wants to access to a critical section. In this proof of concept the c
 In a real scenario the critical section could be network share or a form of SQL database.
 
 \subsection*{Only one peer is accessing the critical section at any given time}
-
+When a peer wants to access the critical section it asks the other peers in the 
 
 \subsection*{Every peer gets access to the critical section}
 
@@ -61,8 +61,106 @@ In a real scenario the critical section could be network share or a form of SQL 
 
 \subsection*{Appendix}
 
-\subsubsection*{Logs}
+\subsubsection*{Logs - Peer #1}
 \begin{lstlisting}[basicstyle=\ttfamily\footnotesize]
+2024/11/09 17:16:48 Access denied, retrying...
+2024/11/09 17:16:48 Accessing critical resource.
+2024/11/09 17:16:53 Releasing critical resource.
+2024/11/09 17:16:53 RequestAccess: From Peer(ID: 19418, TS: 0) -> Granted: false
+2024/11/09 17:16:53 RequestAccess: From Peer(ID: 19590, TS: 0) -> Granted: false
+2024/11/09 17:16:54 RequestAccess: From Peer(ID: 19590, TS: 1) -> Granted: true
+2024/11/09 17:16:54 RequestAccess: From Peer(ID: 19418, TS: 1) -> Granted: true
+2024/11/09 17:16:59 Access denied, retrying...
+2024/11/09 17:16:59 RequestAccess: From Peer(ID: 19418, TS: 2) -> Granted: true
+2024/11/09 17:17:04 Access denied, retrying...
+2024/11/09 17:17:04 RequestAccess: From Peer(ID: 19590, TS: 1) -> Granted: false
+2024/11/09 17:17:05 Accessing critical resource.
+2024/11/09 17:17:10 Releasing critical resource.
+2024/11/09 17:17:10 RequestAccess: From Peer(ID: 19590, TS: 2) -> Granted: false
+2024/11/09 17:17:10 RequestAccess: From Peer(ID: 19418, TS: 2) -> Granted: false
+2024/11/09 17:17:10 RequestAccess: From Peer(ID: 19590, TS: 3) -> Granted: true
+2024/11/09 17:17:10 RequestAccess: From Peer(ID: 19418, TS: 3) -> Granted: true
+2024/11/09 17:17:15 Access denied, retrying...
+2024/11/09 17:17:16 RequestAccess: From Peer(ID: 19418, TS: 4) -> Granted: true
+2024/11/09 17:17:21 Access denied, retrying...
+2024/11/09 17:17:21 RequestAccess: From Peer(ID: 19590, TS: 3) -> Granted: false
+2024/11/09 17:17:21 Accessing critical resource.
+2024/11/09 17:17:26 Releasing critical resource.
+2024/11/09 17:17:26 RequestAccess: From Peer(ID: 19590, TS: 4) -> Granted: false
+2024/11/09 17:17:26 RequestAccess: From Peer(ID: 19418, TS: 4) -> Granted: false
+2024/11/09 17:17:26 RequestAccess: From Peer(ID: 19418, TS: 5) -> Granted: true
+2024/11/09 17:17:27 RequestAccess: From Peer(ID: 19590, TS: 5) -> Granted: true
+2024/11/09 17:17:27 RequestAccess: From Peer(ID: 19590, TS: 6) -> Granted: true
+2024/11/09 17:17:27 RequestAccess: From Peer(ID: 19418, TS: 6) -> Granted: true
+2024/11/09 17:17:32 Access denied, retrying...
+2024/11/09 17:17:32 RequestAccess: From Peer(ID: 19418, TS: 7) -> Granted: true
+2024/11/09 17:17:37 Access denied, retrying...
+2024/11/09 17:17:37 RequestAccess: From Peer(ID: 19590, TS: 6) -> Granted: false
+2024/11/09 17:17:38 Access denied, retrying...
+2024/11/09 17:17:38 RequestAccess: From Peer(ID: 19590, TS: 7) -> Granted: false
+2024/11/09 17:17:38 RequestAccess: From Peer(ID: 19590, TS: 8) -> Granted: true
+\end{lstlisting}
 
+\subsubsection*{Logs - Peer #2}
+\begin{lstlisting}[basicstyle=\ttfamily\footnotesize]
+2024/11/09 17:16:48 RequestAccess: From Peer(ID: 19233, TS: 0) -> Granted: false
+2024/11/09 17:16:48 RequestAccess: From Peer(ID: 19233, TS: 1) -> Granted: true
+2024/11/09 17:16:53 Access denied, retrying...
+2024/11/09 17:16:54 RequestAccess: From Peer(ID: 19590, TS: 1) -> Granted: true
+2024/11/09 17:16:59 Access denied, retrying...
+2024/11/09 17:16:59 RequestAccess: From Peer(ID: 19233, TS: 1) -> Granted: false
+2024/11/09 17:16:59 Accessing critical resource.
+2024/11/09 17:17:04 Releasing critical resource.
+2024/11/09 17:17:04 RequestAccess: From Peer(ID: 19233, TS: 2) -> Granted: false
+2024/11/09 17:17:05 RequestAccess: From Peer(ID: 19233, TS: 3) -> Granted: true
+2024/11/09 17:17:10 Access denied, retrying...
+2024/11/09 17:17:10 RequestAccess: From Peer(ID: 19590, TS: 3) -> Granted: true
+2024/11/09 17:17:15 Access denied, retrying...
+2024/11/09 17:17:15 RequestAccess: From Peer(ID: 19233, TS: 3) -> Granted: false
+2024/11/09 17:17:16 Accessing critical resource.
+2024/11/09 17:17:21 Releasing critical resource.
+2024/11/09 17:17:21 RequestAccess: From Peer(ID: 19233, TS: 4) -> Granted: false
+2024/11/09 17:17:21 RequestAccess: From Peer(ID: 19233, TS: 5) -> Granted: true
+2024/11/09 17:17:26 Access denied, retrying...
+2024/11/09 17:17:26 Access denied, retrying...
+2024/11/09 17:17:27 RequestAccess: From Peer(ID: 19590, TS: 5) -> Granted: false
+2024/11/09 17:17:27 RequestAccess: From Peer(ID: 19590, TS: 6) -> Granted: true
+2024/11/09 17:17:32 Access denied, retrying...
+2024/11/09 17:17:32 RequestAccess: From Peer(ID: 19233, TS: 5) -> Granted: false
+2024/11/09 17:17:32 Accessing critical resource.
+2024/11/09 17:17:37 Releasing critical resource.
+2024/11/09 17:17:37 RequestAccess: From Peer(ID: 19233, TS: 6) -> Granted: false
+2024/11/09 17:17:38 RequestAccess: From Peer(ID: 19233, TS: 7) -> Granted: false
+2024/11/09 17:17:38 RequestAccess: From Peer(ID: 19590, TS: 8) -> Granted: true
+2024/11/09 17:17:38 RequestAccess: From Peer(ID: 19233, TS: 8) -> Granted: true
+\end{lstlisting}
+
+\subsubsection*{Logs - Peer #2}
+\begin{lstlisting}[basicstyle=\ttfamily\footnotesize]
+2024/11/09 17:16:48 RequestAccess: From Peer(ID: 19233, TS: 1) -> Granted: true
+2024/11/09 17:16:53 Access denied, retrying...
+2024/11/09 17:16:54 Accessing critical resource.
+2024/11/09 17:16:59 Releasing critical resource.
+2024/11/09 17:16:59 RequestAccess: From Peer(ID: 19418, TS: 1) -> Granted: false
+2024/11/09 17:16:59 RequestAccess: From Peer(ID: 19418, TS: 2) -> Granted: true
+2024/11/09 17:17:04 Access denied, retrying...
+2024/11/09 17:17:05 RequestAccess: From Peer(ID: 19233, TS: 3) -> Granted: true
+2024/11/09 17:17:10 Access denied, retrying...
+2024/11/09 17:17:10 Accessing critical resource.
+2024/11/09 17:17:15 Releasing critical resource.
+2024/11/09 17:17:15 RequestAccess: From Peer(ID: 19418, TS: 3) -> Granted: false
+2024/11/09 17:17:16 RequestAccess: From Peer(ID: 19418, TS: 4) -> Granted: true
+2024/11/09 17:17:21 Access denied, retrying...
+2024/11/09 17:17:21 RequestAccess: From Peer(ID: 19233, TS: 5) -> Granted: true
+2024/11/09 17:17:26 Access denied, retrying...
+2024/11/09 17:17:26 RequestAccess: From Peer(ID: 19418, TS: 5) -> Granted: false
+2024/11/09 17:17:27 Access denied, retrying...
+2024/11/09 17:17:27 Accessing critical resource.
+2024/11/09 17:17:32 Releasing critical resource.
+2024/11/09 17:17:32 RequestAccess: From Peer(ID: 19418, TS: 6) -> Granted: false
+2024/11/09 17:17:32 RequestAccess: From Peer(ID: 19418, TS: 7) -> Granted: true
+2024/11/09 17:17:37 Access denied, retrying...
+2024/11/09 17:17:38 Access denied, retrying...
+2024/11/09 17:17:38 Accessing critical resource.
 \end{lstlisting}
 \end{document}
