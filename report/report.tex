@@ -44,7 +44,8 @@ Various improments can be made, including the ability to run the peers on differ
 It was decided to keep the proof of concept simple, hence the dicision to postpone these improments.
 
 \subsection*{Peers and the critical section}
-
+Every peer wants to access to a critical section. In this proof of concept the critical section is the ability to write special message to std out.
+In a real scenario the critical section could be network share or a form of SQL database.
 
 \subsection*{Only one peer is accessing the critical section at any given time}
 
