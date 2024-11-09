@@ -7,6 +7,7 @@ service Consensus {
 
 message Request {
   int32 timestamp = 1;
+  string message = 2;
 }
 
 message Reply {
