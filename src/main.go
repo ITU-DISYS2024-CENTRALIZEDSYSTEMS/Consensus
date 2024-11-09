@@ -62,6 +62,8 @@ func useCriticalResource() {
 func getAccessToResource(server *ConsensusServer) {
 	grpcOptions := grpc.WithTransportCredentials(insecure.NewCredentials())
 
+	time.Sleep(5 * time.Second)
+
 	for {
 		server.Requesting.Lock()
 		accessGranted := true
