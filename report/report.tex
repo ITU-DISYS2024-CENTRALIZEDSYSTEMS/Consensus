@@ -43,6 +43,10 @@ Each terminal is running a peer which will begin to ask the other peers for perm
 Various improments can be made, including the ability to run the peers on different ip's and to keep the gRPC connections open for longer periods.
 It was decided to keep the proof of concept simple, hence the dicision to postpone these improments.
 
+\subsection*{Algorithm discussion}
+We have chosen to use the Ricart-Agrawala algorithm due to the flexibility and the ability to be responsive. We also debated wether to use chorded structured Peer-To-Peer
+network instead, but the flexibility of the Ricart-Agrawala algorithm was intriguing, as it could be used in a wide variety of real-world scenarios.
+
 \subsection*{Peers and the critical section}
 Every peer wants to access to a critical section. In this proof of concept the critical section is the ability to write special message to std out.
 In a real scenario the critical section could be network share or a form of SQL database.
