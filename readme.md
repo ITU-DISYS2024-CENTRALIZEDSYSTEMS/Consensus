@@ -16,7 +16,7 @@ Run the program from root:
 ```sh
 go run src/main.go
 ```
-_Note:_ you have 5 sec to open the necessary amount of ports from the `.env` file before the peer nodes begins to access the critical section.
+_Note:_ you have 5 sec to open the nessesarry amount of peers, based on the amount of ports in the `.env` file, before the peers begin to ask the other peers for access.
 
 
 ## Misc.
