@@ -68,6 +68,8 @@ func getAccessToResource(server *ConsensusServer) {
 		server.Requesting.Lock()
 		accessGranted := true
 
+		log.Println("Requesting access")
+
 		for _, peer := range server.Peers {
 			conn, err := grpc.NewClient(":"+peer, grpcOptions)
 			if err != nil {
@@ -95,10 +97,10 @@ func getAccessToResource(server *ConsensusServer) {
 		if accessGranted {
 			useCriticalResource()
 			server.Requesting.Unlock()
-			time.Sleep(5 * time.Second)
+			time.Sleep(1 * time.Second)
+			server.Timestamp++
 		} else {
 			log.Println("Access denied, retrying...")
-			server.Timestamp++
 			server.Requesting.Unlock()
 			time.Sleep(time.Duration(rand.IntN(1000)) * time.Millisecond)
 		}
@@ -110,11 +112,11 @@ func (server *ConsensusServer) RequestAccess(context context.Context, request *c
 	defer server.Requesting.Unlock()
 
 	access := false
-	if request.Timestamp > server.Timestamp || (request.Timestamp == server.Timestamp && request.Identifier > int32(server.Identifier)) {
+	if request.Timestamp < server.Timestamp || (request.Timestamp == server.Timestamp && request.Identifier > int32(server.Identifier)) {
 		access = true
 	}
 
-	log.Printf("RequestAccess: From Peer(ID: %d, TS: %d) -> Granted: %v", request.Identifier, request.Timestamp, access)
+	log.Printf("Peer requested access | ID: %d, TS: %d -> Granted: %v", request.Identifier, request.Timestamp, access)
 	return &consensus.Reply{Access: access}, nil
 }
 
