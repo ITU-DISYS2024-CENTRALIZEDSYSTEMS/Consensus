@@ -1,0 +1,193 @@
+% report.tex
+
+\documentclass[a4paper,11pt]{article}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{varwidth}
+\usepackage{tasks}
+% Import packages
+\usepackage[a4paper]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{enumerate}
+\usepackage{geometry}
+ \geometry{
+ a4paper,
+ total={170mm,257mm},
+ left=20mm,
+ top=20mm,
+ }
+
+\usepackage{graphicx}
+
+\usepackage{listings}
+
+% Change enumerate environments you use letters
+\renewcommand{\theenumi}{\alph{enumi}}
+
+% Set title, author name and date
+\title{Consensus}
+\author{Johannes Jørgensen (jgjo),\\ Kevin Skovgaard Gravesen (kegr),\\ Joakim Andreasen (joaan)} 
+\date{\today}
+
+\begin{document} 
+
+\maketitle
+
+\subsection*{Introduction}
+Consensus is a proof of concept of the Ricart–Agrawala Algorithm. The program is writen in Golang and uses gRPC to pass messages between the clients.
+The program is ran by first creating a .env file, with a set of ports to be used, and then running the main.go file multiple times in different terminals.
+Each terminal is running a peer which will begin to ask the other peers for permission to access the critical section.
+
+Various improments can be made, including the ability to run the peers on different ip's and to keep the gRPC connections open for longer periods.
+It was decided to keep the proof of concept simple, hence the dicision to postpone these improvements.
+
+\subsection*{Algorithm discussion}
+We have chosen to use the Ricart-Agrawala algorithm due to the flexibility and the ability to be responsive. We also debated wether to use Token ring algorithm instead, but the flexibility of the Ricart-Agrawala algorithm was intriguing, as it could be used in a wide variety of real-world scenarios.
+
+Altough in our implementation we have decided that every peer does not hold a queue of other peers to accept. Instead a peer accepts or denies access where the peer whom asked for permission waits a little while before asking again.
+We made the decision because it makes it a little easier to see what is going on in the logs. But still ansure that only one peer gets access and that they all get access eventually.
+
+\subsection*{Peers and the critical section}
+Every peer wants to access to a critical section. In this proof of concept the critical section is the ability to write special message to std out.
+In a real scenario the critical section could be network share or a form of SQL database.
+
+\subsection*{Only one peer is accessing the critical section at any given time}
+When a peer wants to access the critical section it requests access by the other peers in the network, and only gets access if all other peers grants access to the peer.
+If the peer asking for permission and the peer responding both is at the same lamport time, their process id's are used to decide who gets access. A higher process id takes priority in this case.
+The process id's is given to the peer by the operating system when the peer is starting up.
+
+\subsection*{Every peer gets access to the critical section}
+The peer's lamport timestamp is incremented every time that peer gets access to the critical resource.
+Eventually every peer will get access to the critical section, because the waiting peer will eventually end up having the lowest lamport timestamp and get access to the critical section.
+
+\newpage
+\subsection*{Link to Github repository}
+
+\href{https://github.com/ITU-DISYS2024-CENTRALIZEDSYSTEMS/Consensus}{https://github.com/ITU-DISYS2024-CENTRALIZEDSYSTEMS/Consensus}
+
+\subsection*{Appendix}
+
+\subsubsection*{Logs - Peer #1}
+\begin{lstlisting}[basicstyle=\ttfamily\footnotesize]
+2024/11/10 17:37:04 Requesting access
+2024/11/10 17:37:04 Access denied, retrying...
+2024/11/10 17:37:04 Peer requested access | ID: 21126, TS: 0 -> Granted: true
+2024/11/10 17:37:04 Peer requested access | ID: 21308, TS: 0 -> Granted: true
+2024/11/10 17:37:05 Peer requested access | ID: 21126, TS: 0 -> Granted: true
+2024/11/10 17:37:05 Requesting access
+2024/11/10 17:37:09 Access denied, retrying...
+2024/11/10 17:37:10 Peer requested access | ID: 21126, TS: 0 -> Granted: true
+2024/11/10 17:37:10 Requesting access
+2024/11/10 17:37:10 Access denied, retrying...
+2024/11/10 17:37:10 Peer requested access | ID: 21126, TS: 0 -> Granted: true
+2024/11/10 17:37:10 Peer requested access | ID: 21126, TS: 0 -> Granted: true
+2024/11/10 17:37:10 Peer requested access | ID: 21126, TS: 0 -> Granted: true
+2024/11/10 17:37:10 Peer requested access | ID: 21308, TS: 1 -> Granted: false
+2024/11/10 17:37:11 Peer requested access | ID: 21308, TS: 1 -> Granted: false
+2024/11/10 17:37:11 Requesting access
+2024/11/10 17:37:11 Access denied, retrying...
+2024/11/10 17:37:11 Peer requested access | ID: 21126, TS: 0 -> Granted: true
+2024/11/10 17:37:11 Peer requested access | ID: 21308, TS: 1 -> Granted: false
+2024/11/10 17:37:12 Requesting access
+2024/11/10 17:37:16 Access denied, retrying...
+2024/11/10 17:37:16 Peer requested access | ID: 21308, TS: 1 -> Granted: false
+2024/11/10 17:37:17 Peer requested access | ID: 21308, TS: 1 -> Granted: false
+2024/11/10 17:37:17 Requesting access
+2024/11/10 17:37:17 Access denied, retrying...
+2024/11/10 17:37:17 Peer requested access | ID: 21126, TS: 1 -> Granted: false
+2024/11/10 17:37:17 Requesting access
+2024/11/10 17:37:17 Accessing critical resource.
+2024/11/10 17:37:22 Releasing critical resource.
+2024/11/10 17:37:22 Peer requested access | ID: 21308, TS: 1 -> Granted: false
+2024/11/10 17:37:22 Peer requested access | ID: 21126, TS: 1 -> Granted: false
+2024/11/10 17:37:23 Peer requested access | ID: 21308, TS: 1 -> Granted: false
+2024/11/10 17:37:23 Peer requested access | ID: 21126, TS: 1 -> Granted: false
+2024/11/10 17:37:23 Peer requested access | ID: 21308, TS: 1 -> Granted: false
+2024/11/10 17:37:23 Peer requested access | ID: 21308, TS: 1 -> Granted: false
+2024/11/10 17:37:23 Requesting access
+2024/11/10 17:37:23 Access denied, retrying...
+2024/11/10 17:37:23 Peer requested access | ID: 21126, TS: 1 -> Granted: true
+2024/11/10 17:37:24 Peer requested access | ID: 21308, TS: 1 -> Granted: true
+2024/11/10 17:37:24 Requesting access
+2024/11/10 17:37:24 Access denied, retrying...
+2024/11/10 17:37:24 Peer requested access | ID: 21126, TS: 1 -> Granted: true
+2024/11/10 17:37:25 Requesting access
+\end{lstlisting}
+
+\subsubsection*{Logs - Peer #2}
+\begin{lstlisting}[basicstyle=\ttfamily\footnotesize]
+2024/11/10 17:37:04 Peer requested access | ID: 20969, TS: 0 -> Granted: false
+2024/11/10 17:37:04 Requesting access
+2024/11/10 17:37:04 Access denied, retrying...
+2024/11/10 17:37:04 Peer requested access | ID: 21308, TS: 0 -> Granted: true
+2024/11/10 17:37:05 Requesting access
+2024/11/10 17:37:09 Access denied, retrying...
+2024/11/10 17:37:09 Peer requested access | ID: 20969, TS: 0 -> Granted: false
+2024/11/10 17:37:10 Requesting access
+2024/11/10 17:37:10 Access denied, retrying...
+2024/11/10 17:37:10 Peer requested access | ID: 20969, TS: 0 -> Granted: false
+2024/11/10 17:37:10 Requesting access
+2024/11/10 17:37:10 Access denied, retrying...
+2024/11/10 17:37:10 Requesting access
+2024/11/10 17:37:10 Access denied, retrying...
+2024/11/10 17:37:10 Requesting access
+2024/11/10 17:37:10 Access denied, retrying...
+2024/11/10 17:37:11 Peer requested access | ID: 20969, TS: 0 -> Granted: false
+2024/11/10 17:37:11 Requesting access
+2024/11/10 17:37:11 Accessing critical resource.
+2024/11/10 17:37:16 Releasing critical resource.
+2024/11/10 17:37:16 Peer requested access | ID: 20969, TS: 0 -> Granted: false
+2024/11/10 17:37:17 Peer requested access | ID: 20969, TS: 0 -> Granted: false
+2024/11/10 17:37:17 Requesting access
+2024/11/10 17:37:17 Access denied, retrying...
+2024/11/10 17:37:17 Peer requested access | ID: 20969, TS: 0 -> Granted: true
+2024/11/10 17:37:18 Requesting access
+2024/11/10 17:37:22 Access denied, retrying...
+2024/11/10 17:37:23 Requesting access
+2024/11/10 17:37:23 Access denied, retrying...
+2024/11/10 17:37:23 Peer requested access | ID: 20969, TS: 1 -> Granted: false
+2024/11/10 17:37:23 Requesting access
+2024/11/10 17:37:23 Access denied, retrying...
+2024/11/10 17:37:24 Peer requested access | ID: 21308, TS: 1 -> Granted: true
+2024/11/10 17:37:24 Peer requested access | ID: 20969, TS: 1 -> Granted: false
+2024/11/10 17:37:24 Requesting access
+\end{lstlisting}
+
+\subsubsection*{Logs - Peer #3}
+\begin{lstlisting}[basicstyle=\ttfamily\footnotesize]
+2024/11/10 17:37:04 Peer requested access | ID: 21126, TS: 0 -> Granted: false
+2024/11/10 17:37:04 Requesting access
+2024/11/10 17:37:04 Accessing critical resource.
+2024/11/10 17:37:09 Releasing critical resource.
+2024/11/10 17:37:09 Peer requested access | ID: 21126, TS: 0 -> Granted: false
+2024/11/10 17:37:10 Peer requested access | ID: 21126, TS: 0 -> Granted: false
+2024/11/10 17:37:10 Peer requested access | ID: 21126, TS: 0 -> Granted: false
+2024/11/10 17:37:10 Peer requested access | ID: 21126, TS: 0 -> Granted: false
+2024/11/10 17:37:10 Peer requested access | ID: 21126, TS: 0 -> Granted: false
+2024/11/10 17:37:10 Requesting access
+2024/11/10 17:37:10 Access denied, retrying...
+2024/11/10 17:37:11 Requesting access
+2024/11/10 17:37:11 Access denied, retrying...
+2024/11/10 17:37:11 Peer requested access | ID: 21126, TS: 0 -> Granted: true
+2024/11/10 17:37:11 Requesting access
+2024/11/10 17:37:11 Access denied, retrying...
+2024/11/10 17:37:12 Requesting access
+2024/11/10 17:37:16 Access denied, retrying...
+2024/11/10 17:37:17 Requesting access
+2024/11/10 17:37:17 Access denied, retrying...
+2024/11/10 17:37:17 Peer requested access | ID: 20969, TS: 0 -> Granted: true
+2024/11/10 17:37:18 Requesting access
+2024/11/10 17:37:22 Access denied, retrying...
+2024/11/10 17:37:23 Requesting access
+2024/11/10 17:37:23 Access denied, retrying...
+2024/11/10 17:37:23 Requesting access
+2024/11/10 17:37:23 Access denied, retrying...
+2024/11/10 17:37:23 Requesting access
+2024/11/10 17:37:23 Access denied, retrying...
+2024/11/10 17:37:23 Peer requested access | ID: 21126, TS: 1 -> Granted: false
+2024/11/10 17:37:24 Requesting access
+2024/11/10 17:37:24 Accessing critical resource.
+\end{lstlisting}
+\end{document}

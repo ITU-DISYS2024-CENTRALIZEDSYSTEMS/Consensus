@@ -1,14 +1,30 @@
-## Generate GRPC
+# Consensus
+Distributed Mutual Exclusion of a shared resource using the Ricart-Agrawala algorithm.
+
+## Usage
+
+### Make evnironment file of ports
+
+Create a file named ``.env`` in the root directory with the wanted amount of ports.
+```sh
+PORTS=50051,50052,50053
+```
+_Each port has to be seperated with `,` after each port_
+### Run the program
+
+Run the program from root:
+```sh
+go run src/main.go
+```
+_Note:_ you have 5 sec to open the nessesarry amount of peers, based on the amount of ports in the `.env` file, before the peers begin to ask the other peers for access to the critical section.
+
+
+## Misc.
+### Generate GRPC
 
 ```sh
-protoc \
---plugin=protoc-gen-go_grpc=/usr/bin/protoc-gen-go-grpc \
---go_out=. \
---go_opt=paths=source_relative \
---go_grpc_out=. \
---go_grpc_opt=paths=source_relative \
-consensus/consensus.proto
+protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative consensus/consensus.proto
 ```
 
 Note:
---Plugin er optional
+Needs to be ran from the root.

@@ -7,9 +7,9 @@ service Consensus {
 
 message Request {
   int32 timestamp = 1;
+  int32 identifier = 2;
 }
 
 message Reply {
   bool access = 1;
-  int32 timestamp = 2;
 }
