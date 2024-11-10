@@ -44,8 +44,7 @@ Various improments can be made, including the ability to run the peers on differ
 It was decided to keep the proof of concept simple, hence the dicision to postpone these improvements.
 
 \subsection*{Algorithm discussion}
-We have chosen to use the Ricart-Agrawala algorithm due to the flexibility and the ability to be responsive. We also debated wether to use chorded structured Peer-To-Peer
-network instead, but the flexibility of the Ricart-Agrawala algorithm was intriguing, as it could be used in a wide variety of real-world scenarios.
+We have chosen to use the Ricart-Agrawala algorithm due to the flexibility and the ability to be responsive. We also debated wether to use Token ring algorithm instead, but the flexibility of the Ricart-Agrawala algorithm was intriguing, as it could be used in a wide variety of real-world scenarios.
 
 Altough in our implementation we have decided that every peer does not hold a queue of other peers to accept. Instead a peer accepts or denies access where the peer whom asked for permission waits a little while before asking again.
 We made the decision because it makes it a little easier to see what is going on in the logs. But still ansure that only one peer gets access and that they all get access eventually.
@@ -57,7 +56,7 @@ In a real scenario the critical section could be network share or a form of SQL 
 \subsection*{Only one peer is accessing the critical section at any given time}
 When a peer wants to access the critical section it requests access by the other peers in the network, and only gets access if all other peers grants access to the peer.
 If the peer asking for permission and the peer responding both is at the same lamport time, their process id's are used to decide who gets access. A higher process id takes priority in this case.
-The process id's is given to the peer by the OS when the peer is starting up.
+The process id's is given to the peer by the operating system when the peer is starting up.
 
 \subsection*{Every peer gets access to the critical section}
 As every request from peers in the network gets queued in each system if and only if there is already being accessed to the critical section. 
@@ -145,7 +144,7 @@ Therefore if the queue is empty the first peer to request access to the critical
 2024/11/09 17:17:38 RequestAccess: From Peer(ID: 19233, TS: 8) -> Granted: true
 \end{lstlisting}
 
-\subsubsection*{Logs - Peer #2}
+\subsubsection*{Logs - Peer #3}
 \begin{lstlisting}[basicstyle=\ttfamily\footnotesize]
 2024/11/09 17:16:48 RequestAccess: From Peer(ID: 19233, TS: 1) -> Granted: true
 2024/11/09 17:16:53 Access denied, retrying...
