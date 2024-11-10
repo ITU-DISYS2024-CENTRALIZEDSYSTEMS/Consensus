@@ -27,7 +27,7 @@ type ConsensusServer struct {
 	Requesting sync.Mutex
 }
 
-// Finds the first available port from an array of ports. Then returns an listener on that port.
+// Finds the first available port from an array of ports in .env file. Then returns an listener on that port.
 func findAvailablePort(ports []string) (listener net.Listener, err error) {
 	for _, port := range ports {
 		listener, err := net.Listen("tcp", ":"+port)
@@ -62,7 +62,7 @@ func useCriticalResource() {
 func getAccessToResource(server *ConsensusServer) {
 	grpcOptions := grpc.WithTransportCredentials(insecure.NewCredentials())
 
-	time.Sleep(5 * time.Second)
+	time.Sleep(5 * time.Second) // Timeout before trying to access CS.
 
 	for {
 		server.Requesting.Lock()
@@ -92,6 +92,7 @@ func getAccessToResource(server *ConsensusServer) {
 			}
 		}
 
+		// assess if access is granted
 		if accessGranted {
 			useCriticalResource()
 			server.Requesting.Unlock()
@@ -119,6 +120,7 @@ func (server *ConsensusServer) RequestAccess(context context.Context, request *c
 }
 
 func main() {
+	// Read ports from .env file
 	envFile, _ := godotenv.Read(".env")
 	ports := strings.Split(envFile["PORTS"], ",")
 
