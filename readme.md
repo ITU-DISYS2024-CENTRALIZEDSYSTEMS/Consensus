@@ -12,7 +12,7 @@ PORTS=50051,50052,50053
 _Each port has to be seperated with `,` after each port_
 ### Run the program
 
-Run a the program from root:
+Run the program from root:
 ```sh
 go run src/main.go
 ```
