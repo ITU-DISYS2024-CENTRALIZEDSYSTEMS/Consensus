@@ -7,7 +7,7 @@ Distributed Mutual Exclusion of a shared resource using the Ricart-Agrawala algo
 
 Create a file named ``.env`` in the root directory with the wanted amount of ports.
 ```sh
-PORTS=50051,50052,50053,50054,50055
+PORTS=50051,50052,50053
 ```
 _Each port has to be seperated with `,` after each port_
 ### Run the program
